@@ -75,5 +75,4 @@ class FollowViewSet(generics.CreateAPIView, generics.DestroyAPIView):
             return Response(
                 {'Вы отписались от пользователя!'},
                 status=status.HTTP_204_NO_CONTENT)
-        else:
-            return None
+        return None
