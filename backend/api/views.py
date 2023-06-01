@@ -1,20 +1,22 @@
 import io
+
 import django_filters
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, RecipeIngredient, Recipe,
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingList, Tag)
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from rest_framework import generics, mixins, pagination, viewsets, status
+from reportlab.pdfgen import canvas
+from rest_framework import generics, mixins, pagination, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import (
-    IngredientSerializer, RecipeCreateUpdateSerializer, RecipeSerializer,
-    TagSerializer, SubscribeRecipeSerializer)
+
+from .serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
+                          RecipeSerializer, SubscribeRecipeSerializer,
+                          TagSerializer)
 
 User = get_user_model()
 
