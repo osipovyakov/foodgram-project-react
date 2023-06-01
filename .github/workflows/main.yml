@@ -11,7 +11,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.9
     - name: Install dependencies
       run: | 
         python -m pip install --upgrade pip 
@@ -47,7 +47,7 @@ jobs:
       if: ${{ github.ref == 'refs/heads/master' }}
       steps:
         - name: executing remote ssh commands to deploy
-          uses: appleboy/ssh-action@master
+          uses: osipovyakov/ssh-action@master
           with:
             host: ${{ secrets.HOST }}
             username: ${{ secrets.USER }}
@@ -58,8 +58,8 @@ jobs:
               sudo docker rmi --force $(sudo docker image ls -a -q)
               sudo docker volume rm $(sudo docker volume ls -f dangling=true -q)
               sudo docker-compose stop          
-              sudo docker pull osipovyakov/foodgram:latest
-              sudo docker pull osipovyakov/foodgram:latest
+              sudo docker pull osipovyakov/foodgram_back:latest
+              sudo docker pull osipovyakov/foodgram_front:latest
               cd infra/
               rm .env
               touch .env
