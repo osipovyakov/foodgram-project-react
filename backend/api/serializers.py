@@ -1,4 +1,5 @@
 import base64
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
@@ -12,7 +13,7 @@ from users.models import Follow
 User = get_user_model()
 
 
-class ImageField_64 (serializers.ImageField):
+class ImageField64 (serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
@@ -76,7 +77,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     ingredients = RecipeIngredientSerializer(
         many=True, source='recipe_recipeingredient.all')
-    image = ImageField_64()
+    image = ImageField64()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
