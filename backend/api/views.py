@@ -154,4 +154,4 @@ class DownloadShoppingList(generics.ListAPIView):
         shopping_list_fin.save()
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True,
-                            filename='Спиок покупок.pdf')
+                            filename='shopping_list.pdf')
