@@ -9,6 +9,7 @@ services:
       - ./.env
   backend:
     image: osipovyakov/foodgram_back
+    restart: always
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
@@ -18,6 +19,7 @@ services:
       - ./.env
   frontend:
     image: osipovyakov/foodgram_front
+    restart: always
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
