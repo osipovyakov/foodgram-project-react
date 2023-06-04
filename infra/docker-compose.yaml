@@ -19,7 +19,6 @@ services:
       - ./.env
   frontend:
     image: osipovyakov/foodgram_front
-    restart: always
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
