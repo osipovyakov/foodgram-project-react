@@ -37,6 +37,7 @@ class IngredientAdmin (admin.ModelAdmin):
 
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('follower', 'user',)
+    list_filter = ('follower', 'user',)
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -47,18 +48,26 @@ class TagAdmin(admin.ModelAdmin):
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'amount',)
+    list_filter = ('recipe', 'ingredient', )
+    list_editable = ('ingredient', 'amount',)
 
 
 class RecipeTagAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'tag',)
+    list_filter = ('tag',)
+    list_editable = ('tag',)
 
 
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
+    list_filter = ('recipe',)
+    list_editable = ('recipe',)
 
 
 class ShopingListAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
+    list_filter = ('recipe',)
+    list_editable = ('recipe',)
 
 
 admin.site.register(User, UserAdmin)
