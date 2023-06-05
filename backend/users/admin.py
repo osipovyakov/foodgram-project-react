@@ -12,9 +12,17 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('email', 'last_name',)
 
 
+class RecipeIngredientInLine(admin.TabularInline):
+    model = RecipeIngredient
+    min_num = 1
+    extra = 1
+
+
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'name',)
+    list_display = ('author', 'name', 'text', 'cooking_time', 'image',)
     list_filter = ('author', 'name', 'tags',)
+    inlines = (RecipeIngredientInLine,)
+    search_fields = ('name',)
 
     def count(self, x):
         return Favorite.objects.filter(
@@ -24,6 +32,7 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin (admin.ModelAdmin):
     list_display = ('name', 'measurement_unit',)
     list_filter = ('name',)
+    search_fields = ('name',)
 
 
 class FollowAdmin(admin.ModelAdmin):
@@ -32,6 +41,8 @@ class FollowAdmin(admin.ModelAdmin):
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'color', 'slug',)
+    list_editable = ('color',)
+    list_filter = ('name',)
 
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
