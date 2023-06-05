@@ -19,7 +19,7 @@ class RecipeIngredientInLine(admin.TabularInline):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'name', 'text', 'cooking_time', 'image',)
+    list_display = ('author', 'name', 'text', 'tags', 'cooking_time', 'image',)
     list_filter = ('author', 'name', 'tags',)
     inlines = (RecipeIngredientInLine,)
     search_fields = ('name',)
