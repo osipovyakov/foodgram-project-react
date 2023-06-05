@@ -142,7 +142,7 @@ class RecipeTag(models.Model):
         related_name='recipe_recipetag',
         verbose_name='Рецепт'
     )
-    tag = models.ForeignKey(
+    tags = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
         related_name='tag_recipetag',
@@ -155,7 +155,7 @@ class RecipeTag(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f'{self.recipe} : {self.tag}'
+        return f'{self.recipe} : {self.tags}'
 
 
 class Favorite(models.Model):

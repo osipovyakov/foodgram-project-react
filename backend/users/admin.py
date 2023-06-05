@@ -19,7 +19,7 @@ class RecipeIngredientInLine(admin.TabularInline):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'name', 'text', 'tags', 'cooking_time', 'image',)
+    list_display = ('author', 'name', 'text', 'cooking_time', 'image',)
     list_filter = ('author', 'name', 'tags',)
     inlines = (RecipeIngredientInLine,)
     search_fields = ('name',)
@@ -53,9 +53,9 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeTagAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'tag',)
-    list_filter = ('tag',)
-    list_editable = ('tag',)
+    list_display = ('recipe', 'tags',)
+    list_filter = ('tags',)
+    list_editable = ('tags',)
 
 
 class FavoriteAdmin(admin.ModelAdmin):
