@@ -8,10 +8,10 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import generics, mixins, pagination, viewsets
+from rest_framework import generics, filters, mixins, pagination, viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from .filters import TagFilterSet
+from .filters import TagFilterSet, IngredientFilterSet
 from .mixins import CreateDestroyMixin
 from .serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
                           RecipeSerializer, TagSerializer)
@@ -35,14 +35,10 @@ class IngredientsViewSet(mixins.ListModelMixin,
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     http_method = ['get']
-
-    def search_queryset(self, queryset):
-        queryset = super().filter_queryset(queryset)
-        name = self.request.query_params.get('name', None)
-
-        if name is not None:
-            return queryset.filter(name__istartswith=name)
-        return queryset
+    filterset_class = IngredientFilterSet
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ('name',)
+    search_fields = ('name')
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
