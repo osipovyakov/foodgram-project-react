@@ -18,10 +18,16 @@ class RecipeIngredientInLine(admin.TabularInline):
     extra = 1
 
 
+class RecipeTagInLine(admin.TabularInline):
+    model = RecipeTag
+    min_num = 0
+    extra = 1
+
+
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'name', 'text', 'cooking_time', 'image',)
+    list_display = ('author', 'name', 'count',)
     list_filter = ('author', 'name', 'tags',)
-    inlines = (RecipeIngredientInLine,)
+    inlines = (RecipeIngredientInLine, RecipeTagInLine,)
     search_fields = ('name',)
 
     def count(self, x):
@@ -53,9 +59,9 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeTagAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'tags',)
-    list_filter = ('tags',)
-    list_editable = ('tags',)
+    list_display = ('recipe', 'tag',)
+    list_filter = ('tag',)
+    list_editable = ('tag',)
 
 
 class FavoriteAdmin(admin.ModelAdmin):

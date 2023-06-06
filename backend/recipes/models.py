@@ -38,7 +38,7 @@ class Tag(models.Model):
         max_length=50,
         unique=True
     )
-    color = ColorField(samples=COLORS_PALETTE)
+    color = ColorField(choices=COLORS_PALETTE)
     slug = models.SlugField(
         verbose_name='Слаг тега',
         max_length=50,
@@ -53,7 +53,7 @@ class Tag(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
 
 class Recipe (models.Model):
@@ -95,8 +95,8 @@ class Recipe (models.Model):
         db_index=True
     )
 
-    REQUIRED_FIELDS = ['author', 'ingredients', 'tags', 'name',
-                       'image', 'text', 'cooking_time']
+    REQUIRED_FIELDS = ['author', 'name', 'image',
+                       'text', 'cooking_time', ]
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -104,7 +104,7 @@ class Recipe (models.Model):
         ordering = ['-pub_date']
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
 
 class RecipeIngredient(models.Model):
@@ -142,7 +142,7 @@ class RecipeTag(models.Model):
         related_name='recipe_recipetag',
         verbose_name='Рецепт'
     )
-    tags = models.ForeignKey(
+    tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
         related_name='tag_recipetag',
@@ -155,7 +155,7 @@ class RecipeTag(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f'{self.recipe} : {self.tags}'
+        return f'{self.recipe} : {self.tag}'
 
 
 class Favorite(models.Model):
