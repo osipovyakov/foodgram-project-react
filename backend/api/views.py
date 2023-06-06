@@ -104,7 +104,7 @@ class DownloadShoppingList(generics.ListAPIView):
         shopping_list_fin.drawString(
             100, 750, 'Вот Ваш Cписок покупок:')
         y = 700
-        for index in range(0, len(ingredient), 3):
+        for index in range(0, len(ingredient), 2):
             string = (
                 f' *  {ingredient[index]} — {str(ingredient[index+1])}')
             shopping_list_fin.drawString(100, y, string)
