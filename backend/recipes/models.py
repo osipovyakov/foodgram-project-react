@@ -5,9 +5,9 @@ from django.db import models
 User = get_user_model()
 
 COLORS_PALETTE = [
-    ('#F5B151', 'breakfast', ),
-    ('#BBE2BB', 'lunch', ),
-    ('#B1A7E2', 'dinner', ),
+    ("#F5B151", "breakfast", ),
+    ("#BBE2BB", "lunch", ),
+    ("#B1A7E2", "dinner", ),
 ]
 
 
@@ -38,7 +38,7 @@ class Tag(models.Model):
         max_length=50,
         unique=True
     )
-    color = ColorField(choices=COLORS_PALETTE)
+    color = ColorField(samples=COLORS_PALETTE)
     slug = models.SlugField(
         verbose_name='Слаг тега',
         max_length=50,
