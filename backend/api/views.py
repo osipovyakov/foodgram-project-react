@@ -8,10 +8,10 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import generics, filters, mixins, pagination, viewsets
+from rest_framework import filters, generics, mixins, pagination, viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from .filters import TagFilterSet, IngredientFilterSet
+from .filters import IngredientFilterSet, TagFilterSet
 from .mixins import CreateDestroyMixin
 from .serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
                           RecipeSerializer, TagSerializer)
