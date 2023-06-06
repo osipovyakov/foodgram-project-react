@@ -68,6 +68,7 @@ class TagViewSet(mixins.ListModelMixin,
 class IngredientsViewSet(mixins.ListModelMixin,
                          mixins.RetrieveModelMixin,
                          viewsets.GenericViewSet):
+    pagination_class = None
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     http_method = ['get']
@@ -122,7 +123,6 @@ class DownloadShoppingList(generics.ListAPIView):
     http_method = ['get']
 
     def get(self, request, *args, **kwargs):
-        user = request.user
         recipes = Recipe.objects.filter(
             recipe_shoppinglist__user=self.request.user)
         ingredients_list = []
@@ -143,7 +143,7 @@ class DownloadShoppingList(generics.ListAPIView):
         pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
         shopping_list_fin.setFont('Vera', 14)
         shopping_list_fin.drawString(
-            100, 750, f'{user.get_full_name()}, вот Ваш Cписок покупок:')
+            100, 750, 'Вот Ваш Cписок покупок:')
         y = 700
         for index in range(0, len(ingredient), 3):
             string = (
