@@ -99,8 +99,8 @@ class DownloadShoppingList(generics.ListAPIView):
 
         buffer = io.BytesIO()
         shopping_list_fin = canvas.Canvas(buffer)
-        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-        shopping_list_fin.setFont('Vera', 14)
+        pdfmetrics.registerFont(TTFont('TimesNewRoman', 'TimesNewRoman.ttf'))
+        shopping_list_fin.setFont('TimesNewRoman', 14)
         shopping_list_fin.drawString(
             100, 750, 'Вот Ваш Cписок покупок:')
         y = 700
