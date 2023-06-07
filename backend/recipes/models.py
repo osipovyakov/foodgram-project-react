@@ -69,7 +69,7 @@ class Recipe (models.Model):
     )
     text = models.TextField(
         verbose_name='Описание',
-        max_length=150
+        max_length=2000
     )
     image = models.ImageField(
         verbose_name='Изображение',
