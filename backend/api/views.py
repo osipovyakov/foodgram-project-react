@@ -44,8 +44,8 @@ class IngredientsViewSet(mixins.ListModelMixin,
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     http_method = ['get', 'post', 'patch', 'delete']
-    filter_back = (DjangoFilterBackend,)
-    filter_class = TagFilterSet
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TagFilterSet
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
