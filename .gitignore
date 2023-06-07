@@ -27,6 +27,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 ./frontend/node_modules
+./frontend/build
 
 
 # PyInstaller
