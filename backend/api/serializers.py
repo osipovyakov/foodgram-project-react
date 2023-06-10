@@ -123,7 +123,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
 
     def validate_ingredients(self, value):
         ingredients = value
-        print (ingredients)
+        print(ingredients)
         if not ingredients:
             raise ValidationError({
                 'Нужен хотя бы один ингредиент!'})
