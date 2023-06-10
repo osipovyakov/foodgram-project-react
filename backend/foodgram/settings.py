@@ -156,14 +156,16 @@ REST_FRAMEWORK = {
 }
 DJOSER = {
     'SERIALIZERS': {
-        'token_create': 'api.serializers.CustomTokenCreateSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
         'user': 'api.serializers.CustomUserSerializer',
         'current_user': 'api.serializers.CustomUserSerializer',
     },
-    'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
-    },
 
+    'PERMISSIONS': {
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    },
+    'HIDE_USERS': False,
 }
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
