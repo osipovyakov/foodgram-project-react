@@ -123,12 +123,13 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
 
     def validate_ingredients(self, value):
         ingredients = value
+        print (ingredients)
         if not ingredients:
             raise ValidationError({
                 'Нужен хотя бы один ингредиент!'})
         ingredients_list = []
         for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, name=item['name'])
+            ingredient = get_object_or_404(Ingredient, id=item['id'])
             if ingredient in ingredients_list:
                 raise ValidationError({
                     'Ингридиенты не могут повторяться!'})
