@@ -1,6 +1,7 @@
 from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
@@ -38,7 +39,10 @@ class Tag(models.Model):
         max_length=50,
         unique=True
     )
-    color = ColorField(samples=COLORS_PALETTE)
+    color = ColorField(
+        samples=COLORS_PALETTE,
+        unique=True
+    )
     slug = models.SlugField(
         verbose_name='Слаг тега',
         max_length=50,
@@ -64,7 +68,6 @@ class Recipe (models.Model):
     )
     name = models.CharField(
         max_length=200,
-        unique=True,
         verbose_name='Название рецепта'
     )
     text = models.TextField(
@@ -77,7 +80,7 @@ class Recipe (models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
-        null=False
+        validators=[MinValueValidator(1)]
     )
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -86,7 +89,6 @@ class Recipe (models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        through='RecipeTag',
         verbose_name='Теги рецепта'
     )
     pub_date = models.DateTimeField(
@@ -109,7 +111,8 @@ class Recipe (models.Model):
 
 class RecipeIngredient(models.Model):
     amount = models.IntegerField(
-        verbose_name='Количество'
+        verbose_name='Количество',
+        validators=[MinValueValidator(1)]
     )
     ingredient = models.ForeignKey(
         Ingredient,
@@ -135,29 +138,6 @@ class RecipeIngredient(models.Model):
         return f'{self.recipe}: {self.ingredient}-{self.amount}'
 
 
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='recipe_recipetag',
-        verbose_name='Рецепт'
-    )
-    tag = models.ForeignKey(
-        Tag,
-        on_delete=models.CASCADE,
-        related_name='tag_recipetag',
-        verbose_name='Тег'
-    )
-
-    class Meta:
-        verbose_name = 'Тег рецепта'
-        verbose_name_plural = 'Теги рецептов'
-        ordering = ['-id']
-
-    def __str__(self):
-        return f'{self.recipe} : {self.tag}'
-
-
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
@@ -175,6 +155,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Рецепт в избранном'
         verbose_name_plural = 'Рецепты в избранном'
+        unique_together = ['user', 'recipe']
         ordering = ['-id']
 
     def __str__(self):
@@ -198,6 +179,7 @@ class ShoppingList(models.Model):
     class Meta:
         verbose_name = 'Рецепт для похода в магазин'
         verbose_name_plural = 'Рецепты для похода в магазин'
+        unique_together = ['user', 'recipe']
         ordering = ['-id']
 
     def __str__(self):

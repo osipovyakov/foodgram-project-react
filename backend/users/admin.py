@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            RecipeTag, ShoppingList, Tag)
+                            ShoppingList, Tag)
 from users.models import Follow
 
 User = get_user_model()
@@ -18,16 +18,10 @@ class RecipeIngredientInLine(admin.TabularInline):
     extra = 1
 
 
-class RecipeTagInLine(admin.TabularInline):
-    model = RecipeTag
-    min_num = 0
-    extra = 1
-
-
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('author', 'name', 'count',)
     list_filter = ('author', 'name', 'tags',)
-    inlines = (RecipeIngredientInLine, RecipeTagInLine,)
+    inlines = (RecipeIngredientInLine,)
     search_fields = ('name',)
 
     def count(self, x):
@@ -82,6 +76,5 @@ admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Follow, FollowAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(RecipeIngredient, RecipeIngredientAdmin)
-admin.site.register(RecipeTag, RecipeTagAdmin)
 admin.site.register(Favorite, FavoriteAdmin)
 admin.site.register(ShoppingList, ShopingListAdmin)

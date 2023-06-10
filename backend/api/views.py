@@ -1,18 +1,23 @@
 import io
 
 from django.contrib.auth import get_user_model
-from django.http import FileResponse
+from django.db.models import Sum
+from django.http import FileResponse, HttpResponse
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingList, Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import filters, generics, mixins, pagination, viewsets
+from rest_framework import filters, generics, mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from .filters import IngredientFilterSet, TagFilterSet
+from .filters import IngredientFilterSet, RecipeFilterSet
 from .mixins import CreateDestroyMixin
+from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
                           RecipeSerializer, TagSerializer)
 
@@ -44,69 +49,83 @@ class IngredientsViewSet(mixins.ListModelMixin,
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     http_method = ['get', 'post', 'patch', 'delete']
+    permission_classes = (IsAuthorOrReadOnly, IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_class = TagFilterSet
+    filterset_class = RecipeFilterSet
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return RecipeSerializer
         return RecipeCreateUpdateSerializer
 
-    def filter_queryset(self, queryset):
-        queryset = super().filter_queryset(queryset)
-        is_favorited = self.request.query_params.get('is_favorited')
-        in_shopping_cart = self.request.query_params.get('in_shopping_cart')
-        author = self.request.query_params.get('author')
-        if author is not None:
-            queryset = queryset.filter(author=author)
-        if is_favorited:
-            queryset = queryset.filter(recipe_favorite__user=self.request.user)
-        elif in_shopping_cart:
-            self.pagination_class = pagination.LimitOffsetPagination
-            return queryset.filter(recipe_shoppinglist__user=self.request.user)
-        return queryset
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        permission_classes=[IsAuthenticated]
+    )
+    def favorite(self, request, pk):
+        if request.method == 'POST':
+            return self.add_to(Favorite, request.user, pk)
+        else:
+            return self.delete_from(Favorite, request.user, pk)
 
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        permission_classes=[IsAuthenticated]
+    )
+    def shopping_cart(self, request, pk):
+        if request.method == 'POST':
+            return self.add_to(ShoppingList, request.user, pk)
+        else:
+            return self.delete_from(ShoppingList, request.user, pk)
 
-class FavoriteViewSet(CreateDestroyMixin):
-    model = Favorite
-    queryset = Favorite.objects.all()
+    def add_to(self, model, user, pk):
+        if model.objects.filter(user=user, recipe__id=pk).exists():
+            return Response({'Рецепт уже добавлен!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        recipe = get_object_or_404(Recipe, id=pk)
+        model.objects.create(user=user, recipe=recipe)
+        serializer = RecipeSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def delete_from(self, model, user, pk):
+        obj = model.objects.filter(user=user, recipe__id=pk)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'Рецепт уже удален!'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-class ShoppingListViewSet(CreateDestroyMixin):
-    model = ShoppingList
-    queryset = ShoppingList.objects.all()
+    @action(
+        detail=False,
+        permission_classes=[IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        user = request.user
+        if not user.shopping_cart.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
-class DownloadShoppingList(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    http_method = ['get']
-
-    def get(self, request, *args, **kwargs):
-        recipes = Recipe.objects.filter(
-            recipe_shoppinglist__user=self.request.user)
-        ingredients_list = []
-        for recipe in recipes:
-            ingredients = RecipeIngredient.objects.filter(recipe=recipe)
-            ingredients_list += ingredients
-        ingredient = []
-        for item in ingredients_list:
-            name = Ingredient.objects.get(name=item.ingredient.name)
-            amount = item.amount
-            if name in ingredient:
-                ingredient[ingredient.index(name) + 1] += amount
-            else:
-                ingredient += (name, amount)
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=request.user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
 
         buffer = io.BytesIO()
         shopping_list_fin = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('TimesNewRoman', 'TimesNewRoman.ttf'))
         shopping_list_fin.setFont('TimesNewRoman', 14)
         shopping_list_fin.drawString(
-            100, 750, 'Вот Ваш Cписок покупок:')
+            100, 750, f'{user.get_full_name()}, вот Ваш Cписок покупок:')
         y = 700
-        for index in range(0, len(ingredient), 2):
+
+        for ingredient in ingredients:
             string = (
-                f' *  {ingredient[index]} — {str(ingredient[index+1])}')
+                f'- {ingredient["ingredient__name"]} '
+                f'({ingredient["ingredient__measurement_unit"]})'
+                f' - {ingredient["amount"]}')
             shopping_list_fin.drawString(100, y, string)
             y -= 30
         shopping_list_fin.showPage()
