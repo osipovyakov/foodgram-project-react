@@ -204,14 +204,14 @@ class SubscribeUserSerializer(CustomUserSerializer):
         read_only_fields = ('email', 'username')
 
     def validate(self, data):
-        author = self.instance
+        follower = self.instance
         user = self.context.get('request').user
-        if Follow.objects.filter(author=author, user=user).exists():
+        if Follow.objects.filter(follower=follower, user=user).exists():
             raise ValidationError(
                 detail='Вы уже подписаны на этого пользователя!',
                 code=status.HTTP_400_BAD_REQUEST
             )
-        if user == author:
+        if user == follower:
             raise ValidationError(
                 detail='Вы не можете подписаться на себя!',
                 code=status.HTTP_400_BAD_REQUEST
