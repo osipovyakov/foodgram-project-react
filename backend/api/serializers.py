@@ -118,6 +118,8 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     ingredients = RecipeIngredientCreateSerializer(many=True)
+    author = CustomUserSerializer(read_only=True)
+    image = ImageField64()
 
     def validate_ingredients(self, value):
         ingredients = value
@@ -155,16 +157,15 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         ingredients = validate_data.pop('ingredients')
         tags = validate_data.pop('tags')
         recipe = Recipe.objects.create(
-            **validate_data,
-            author=self.context['request'].user
-        )
+            **validate_data)
+        recipe.tags.set(tags)
         RecipeIngredient.objects.bulk_create(
             RecipeIngredientCreateSerializer(
                 recipe=recipe,
                 ingredient=ingredient.get('ingredient'),
                 amount=ingredient.get('amount')
             ) for ingredient in ingredients)
-        recipe.tags.set(tags)
+        return recipe
 
     def update(self, instance, validate_data):
         ingredients = validate_data.pop('ingredients')
