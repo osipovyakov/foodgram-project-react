@@ -128,7 +128,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
                 'Нужен хотя бы один ингредиент!'})
         ingredients_list = []
         for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
+            ingredient = get_object_or_404(Ingredient, name=item['name'])
             if ingredient in ingredients_list:
                 raise ValidationError({
                     'Ингридиенты не могут повторяться!'})
