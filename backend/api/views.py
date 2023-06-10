@@ -48,7 +48,7 @@ class IngredientsViewSet(mixins.ListModelMixin,
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     http_method = ['get', 'post', 'patch', 'delete']
-    permission_classes = (IsAuthorOrReadOnly, IsAdminOrReadOnly,)
+    permission_classes = (IsAuthorOrReadOnly | IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
 
