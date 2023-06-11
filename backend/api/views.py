@@ -17,8 +17,9 @@ from rest_framework.response import Response
 
 from .filters import IngredientFilterSet, RecipeFilterSet
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
-                          RecipeSerializer, TagSerializer)
+from .serializers import (
+    IngredientSerializer, RecipeCreateUpdateSerializer, RecipeSerializer,
+    TagSerializer, Recipe_without_request_serializer)
 
 User = get_user_model()
 
