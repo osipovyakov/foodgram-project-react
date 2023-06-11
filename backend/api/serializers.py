@@ -165,32 +165,34 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
             tags_list.append(tag)
         return value
 
-    def create(self, validate_data):
-        ingredients = validate_data.pop('ingredients')
-        tags = validate_data.pop('tags')
-        recipe = Recipe.objects.create(**validate_data)
-        recipe.tags.set(tags)
+    def create_ingredients_amounts(self, ingredients, recipe):
         RecipeIngredient.objects.bulk_create(
-            RecipeIngredientCreateSerializer(
+            [RecipeIngredient(
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
-                ingredient=ingredient.get('ingredient'),
-                amount=ingredient.get('amount')
-            ) for ingredient in ingredients)
+                amount=ingredient['amount']
+            ) for ingredient in ingredients]
+        )
+
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        self.create_ingredients_amounts(recipe=recipe,
+                                        ingredients=ingredients)
         return recipe
 
-    def update(self, instance, validate_data):
-        ingredients = validate_data.pop('ingredients')
-        tags = validate_data.pop('tags')
-        instance = super().update(instance, validate_data)
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        instance = super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        RecipeIngredient.objects.bulk_create(
-            RecipeIngredientCreateSerializer(
-                recipe=instance,
-                ingredient=ingredient.get('ingredient'),
-                amount=ingredient.get('amount')
-            ) for ingredient in ingredients)
+        self.create_ingredients_amounts(recipe=instance,
+                                        ingredients=ingredients)
+        instance.save()
         return instance
 
     def to_representation(self, instance):
