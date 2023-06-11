@@ -73,17 +73,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.add_to(ShoppingList, request.user, pk)
         return self.delete_from(ShoppingList, request.user, pk)
 
-    def add_to(self, model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
+    def add_to(self, model, request, pk):
+        if model.objects.filter(user=request.user, recipe__id=pk).exists():
             return Response({'Рецепт уже добавлен!'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=pk)
-        model.objects.create(user=user, recipe=recipe)
+        model.objects.create(user=request.user, recipe=recipe)
         serializer = RecipeSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def delete_from(self, model, user, pk):
-        obj = model.objects.filter(user=user, recipe__id=pk)
+    def delete_from(self, model, request, pk):
+        obj = model.objects.filter(user=request.user, recipe__id=pk)
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
