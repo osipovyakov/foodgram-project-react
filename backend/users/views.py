@@ -3,7 +3,7 @@ from api.serializers import (CustomTokenCreateSerializer, CustomUserSerializer,
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import TokenCreateView, UserViewSet
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -33,12 +33,11 @@ class CustomUserView(UserViewSet):
 
         if request.method == 'POST':
             serializer = SubscribeUserSerializer(
-                author, data=request.data, context={"request": request})
+                author, data=request.data, context={'request': request})
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        if request.method == 'DELETE':
+        else:
             subscription = get_object_or_404(
                 Follow, user=user, author=author)
             subscription.delete()
