@@ -23,7 +23,7 @@ from .serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
 User = get_user_model()
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
