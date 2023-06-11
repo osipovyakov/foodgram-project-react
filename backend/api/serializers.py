@@ -3,6 +3,7 @@ import base64
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from djoser.serializers import TokenCreateSerializer, UserSerializer
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
@@ -166,6 +167,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
             tags_list.append(tag)
         return value
 
+    @transaction.atomic
     def create_ingredients_amounts(self, ingredients, recipe):
         RecipeIngredient.objects.bulk_create(
             [RecipeIngredient(
@@ -175,6 +177,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
             ) for ingredient in ingredients]
         )
 
+    @transaction.atomic
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
@@ -184,6 +187,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
                                         ingredients=ingredients)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
