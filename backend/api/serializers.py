@@ -36,9 +36,10 @@ class CustomUserSerializer(UserSerializer):
         fields = UserSerializer.Meta.fields + ('is_subscribed',)
 
     def get_is_subscribed(self, obj):
-        return Follow.objects.filter(
-            user=self.context['request'].user.id, follower=obj.id
-        ).exists()
+        follower = self.context.get('request').user
+        if follower.is_anonymous:
+            return False
+        return Follow.objects.filter(follower=follower, user=obj).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
