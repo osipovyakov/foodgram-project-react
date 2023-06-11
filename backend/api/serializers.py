@@ -49,7 +49,7 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         return Follow.objects.filter(
-            user=self.context['request'].user.id, author=obj.id
+            user=self.context['request'].user, author=obj
         ).exists()
 
 
@@ -97,13 +97,13 @@ class RecipeSerializer(serializers.ModelSerializer):
             amount=F('recipeingredient__amount'))
 
     def get_is_favorited(self, obj):
-        user = CustomUserSerializer(context=self.context)
+        user = self.context.get('request').user
         if user.is_anonymous:
             return False
         return user.favorite.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        user = CustomUserSerializer(context=self.context)
+        user = self.context.get('request').user
         if user.is_anonymous:
             return False
         return user.shopping_cart.filter(recipe=obj).exists()
