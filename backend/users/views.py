@@ -13,10 +13,6 @@ from .models import Follow
 User = get_user_model()
 
 
-class CustomTokenCreateView(TokenCreateView):
-    serializer_class = CustomTokenCreateSerializer
-
-
 class CustomUserView(UserViewSet):
     quyryset = User.objects.all()
     serializer_class = CustomUserSerializer
