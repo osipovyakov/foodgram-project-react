@@ -88,11 +88,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response({'Рецепт уже удален!'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-
-
     @action(
         detail=False,
         permission_classes=[IsAuthenticated]
