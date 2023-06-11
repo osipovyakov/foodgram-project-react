@@ -2,9 +2,9 @@ import base64
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db.models import F
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import TokenCreateSerializer, UserSerializer
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
