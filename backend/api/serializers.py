@@ -140,7 +140,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
                 'Нужен хотя бы один ингредиент!'})
         ingredients_list = []
         for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
+            ingredient = get_object_or_404(Ingredient, id=item['pk'])
             if ingredient in ingredients_list:
                 raise ValidationError({
                     'Ингридиенты не могут повторяться!'})
@@ -168,7 +168,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
     def create_ingredients_amounts(self, ingredients, recipe):
         RecipeIngredient.objects.bulk_create(
             [RecipeIngredient(
-                ingredient=Ingredient.objects.get(id=ingredient['pk']),
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
                 amount=ingredient['amount']
             ) for ingredient in ingredients]
