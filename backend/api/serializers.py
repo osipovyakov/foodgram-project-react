@@ -245,3 +245,16 @@ class SubscribeUserSerializer(CustomUserSerializer):
             recipes = recipes[:int(limit)]
         serializer = RecipeSerializer(recipes, many=True, read_only=True)
         return serializer.data
+
+
+class RecipeShortSerializer(serializers.ModelSerializer):
+    image = ImageField64()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
