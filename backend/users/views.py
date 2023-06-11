@@ -21,30 +21,37 @@ class CustomUserView(UserViewSet):
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
     )
-    def subscribe(self, request, **kwargs):
+    def subscribe(self, request, id):
         user = request.user
-        author_id = self.kwargs.get('id')
-        author = get_object_or_404(User, id=author_id)
+        author = get_object_or_404(User, id=id)
+        subscription = Follow.objects.filter(
+            user=user, author=author)
 
         if request.method == 'POST':
+            if subscription.exists():
+                return Response({'Вы уже подписаны'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if user == author:
+                return Response({'Невозможно подписаться на себя'},
+                                status=status.HTTP_400_BAD_REQUEST)
             serializer = SubscribeUserSerializer(
-                author, data=request.data, context={'request': request})
-            serializer.is_valid(raise_exception=True)
+                author, context={'request': request})
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        subscription = get_object_or_404(
-            Follow, user=user, author=author)
-        subscription.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(
-        detail=False,
-        permission_classes=[IsAuthenticated]
-    )
+        if request.method == 'DELETE':
+            if subscription.exists():
+                subscription.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'Вы не подписаны на этого пользователя'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
-        queryset = User.objects.filter(following__user=user)
-        pages = self.paginate_queryset(queryset)
+        follows = User.objects.filter(following__user=user)
+        page = self.paginate_queryset(follows)
         serializer = SubscribeUserSerializer(
-            pages, many=True, context={'request': request})
+            page, many=True,
+            context={'request': request})
         return self.get_paginated_response(serializer.data)
