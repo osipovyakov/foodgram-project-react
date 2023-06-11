@@ -89,7 +89,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     @action(
-        detail=False,
+        detail=True,
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
