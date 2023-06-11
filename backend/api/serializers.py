@@ -105,8 +105,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all(),
-                                            source='ingredient.id')
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
     class Meta:
         model = RecipeIngredient
@@ -121,9 +120,21 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
     author = CustomUserSerializer(read_only=True)
     image = ImageField64()
 
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        )
+
     def validate_ingredients(self, value):
         ingredients = value
-        print(ingredients)
         if not ingredients:
             raise ValidationError({
                 'Нужен хотя бы один ингредиент!'})
@@ -157,8 +168,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
     def create(self, validate_data):
         ingredients = validate_data.pop('ingredients')
         tags = validate_data.pop('tags')
-        recipe = Recipe.objects.create(
-            **validate_data)
+        recipe = Recipe.objects.create(**validate_data)
         recipe.tags.set(tags)
         RecipeIngredient.objects.bulk_create(
             RecipeIngredientCreateSerializer(
@@ -175,8 +185,12 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_ingredients_amounts(recipe=instance,
-                                        ingredients=ingredients)
+        RecipeIngredient.objects.bulk_create(
+            RecipeIngredientCreateSerializer(
+                recipe=instance,
+                ingredient=ingredient.get('ingredient'),
+                amount=ingredient.get('amount')
+            ) for ingredient in ingredients)
         return instance
 
     def to_representation(self, instance):
