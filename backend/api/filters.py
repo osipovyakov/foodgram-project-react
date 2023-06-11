@@ -26,7 +26,7 @@ class RecipeFilterSet(django_filters.FilterSet):
     def filter_is_favorited(self, queryset, name, value):
         user = self.requset.user
         if value and not user.is_anonymous:
-            return queryset.filter(favorites__user=user)
+            return queryset.filter(favorite__user=user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
