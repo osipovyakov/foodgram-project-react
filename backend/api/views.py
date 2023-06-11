@@ -88,9 +88,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response({'Рецепт уже удален!'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    @action(
-        permission_classes=[IsAuthenticated]
-    )
     def download_shopping_cart(self, request):
         user = request.user
         if not user.shopping_cart.exists():
