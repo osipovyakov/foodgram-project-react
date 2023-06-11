@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
-from djoser.serializers import TokenCreateSerializer, UserSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingList, Tag)
 from rest_framework import serializers, status
@@ -26,8 +26,13 @@ class ImageField64 (serializers.ImageField):
         return super().to_internal_value(data)
 
 
-class CustomTokenCreateSerializer(TokenCreateSerializer):
-    settings.LOGIN_FIELD = User.USERNAME_FIELD
+class CustomUserCreateSerializer(UserCreateSerializer):
+    class Meta:
+        model = User
+        fields = tuple(User.REQUIRED_FIELDS) + (
+            User.USERNAME_FIELD,
+            'password',
+        )
 
 
 class CustomUserSerializer(UserSerializer):
