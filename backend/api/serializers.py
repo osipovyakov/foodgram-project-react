@@ -9,7 +9,7 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingList, Tag)
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import SerializerMethodField
+from rest_framework.fields import IntegerField, SerializerMethodField
 from users.models import Follow
 
 User = get_user_model()
@@ -105,7 +105,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    id = IntegerField(write_only=True)
 
     class Meta:
         model = RecipeIngredient
@@ -141,7 +141,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         ingredients_list = []
         for item in ingredients:
             ingredient = get_object_or_404(Ingredient,
-                                           id=item['ingredient']['id'])
+                                           id=item['id'])
             if ingredient in ingredients_list:
                 raise ValidationError({
                     'Ингридиенты не могут повторяться!'})
