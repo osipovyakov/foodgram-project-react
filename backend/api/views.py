@@ -107,7 +107,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         ingredients = RecipeIngredient.objects.filter(
-            recipe__recipe_shoppinglist__user=request.user
+            recipe__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
