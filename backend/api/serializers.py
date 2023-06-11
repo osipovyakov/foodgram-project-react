@@ -49,6 +49,7 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
+        print(self.context)
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
@@ -77,8 +78,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     ingredients = SerializerMethodField()
     image = ImageField64()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = SerializerMethodField()
+    is_in_shopping_cart = SerializerMethodField()
 
     class Meta:
         model = Recipe
