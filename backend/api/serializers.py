@@ -247,7 +247,7 @@ class SubscribeUserSerializer(CustomUserSerializer):
         return serializer.data
 
 
-class Recipe_without_request_serializer(serializers.ModelSerializer):
+class RecipeWithoutRequestSerializer(serializers.ModelSerializer):
     image = ImageField64()
 
     class Meta:
