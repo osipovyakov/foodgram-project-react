@@ -64,6 +64,7 @@ class Recipe (models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='recipes',
         verbose_name='Автор'
     )
     name = models.CharField(
@@ -89,6 +90,7 @@ class Recipe (models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
+        related_name='recipes',
         verbose_name='Теги рецепта'
     )
     pub_date = models.DateTimeField(
@@ -110,20 +112,19 @@ class Recipe (models.Model):
 
 
 class RecipeIngredient(models.Model):
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         validators=[MinValueValidator(1)]
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredient_recipeingredient',
         verbose_name='Ингредиент'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe_recipeingredient',
+        related_name='ingredient_recipeingredient',
         verbose_name='Рецепт'
     )
 

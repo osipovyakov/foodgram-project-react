@@ -36,8 +36,8 @@ class IngredientAdmin (admin.ModelAdmin):
 
 
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ('follower', 'user',)
-    list_filter = ('follower', 'user',)
+    list_display = ('user', 'author',)
+    list_filter = ('user', 'author',)
 
 
 class TagAdmin(admin.ModelAdmin):
