@@ -82,13 +82,9 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart',)
 
     def get_ingredients(self, obj):
-        ingredients = obj.ingredients.values(
-            'id',
-            'name',
-            'measurement_unit',
-            amount=F('recipeingredient__amount')
-        )
-        return ingredients
+        return obj.ingredients.values(
+            'id', 'name', 'measurement_unit',
+            amount=F('recipeingredient__amount'))
 
     def get_is_favorited(self, obj):
         return Favorite.objects.filter(
