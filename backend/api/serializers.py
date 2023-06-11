@@ -2,6 +2,7 @@ import base64
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import F
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.shortcuts import get_object_or_404
@@ -30,16 +31,16 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ('is_subscribed',)
 
     def get_is_subscribed(self, obj):
-        follower = self.context.get('request').user
-        if follower.is_anonymous:
+        user = self.context.get('request').user
+        if user.is_anonymous:
             return False
-        return Follow.objects.filter(follower=follower, user=obj).exists()
+        return Follow.objects.filter(user=user, author=obj).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -59,25 +60,10 @@ class IngredientSerializer(serializers.ModelSerializer):
                   'measurement_unit',)
 
 
-class RecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.ReadOnlyField(source='ingredient.name')
-    measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit')
-
-    class Meta():
-        model = RecipeIngredient
-        fields = ('id',
-                  'name',
-                  'measurement_unit',
-                  'amount',)
-
-
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    ingredients = RecipeIngredientSerializer(
-        many=True, source='recipe_recipeingredient')
+    ingredients = SerializerMethodField()
     image = ImageField64()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -94,6 +80,16 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'tags',
                   'is_favorited',
                   'is_in_shopping_cart',)
+
+    def get_ingredients(self, obj):
+        recipe = obj
+        ingredients = recipe.ingredients.values(
+            'id',
+            'name',
+            'measurement_unit',
+            amount=F('recipeingredient__amount')
+        )
+        return ingredients
 
     def get_is_favorited(self, obj):
         return Favorite.objects.filter(
@@ -205,15 +201,6 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         return RecipeSerializer(instance, context=context).data
 
 
-class SubscribeRecipeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = ('id',
-                  'name',
-                  'image',
-                  'cooking_time')
-
-
 class SubscribeUserSerializer(CustomUserSerializer):
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
@@ -225,14 +212,14 @@ class SubscribeUserSerializer(CustomUserSerializer):
         read_only_fields = ('email', 'username')
 
     def validate(self, data):
-        follower = self.instance
+        author = self.instance
         user = self.context.get('request').user
-        if Follow.objects.filter(follower=follower, user=user).exists():
+        if Follow.objects.filter(author=author, user=user).exists():
             raise ValidationError(
                 detail='Вы уже подписаны на этого пользователя!',
                 code=status.HTTP_400_BAD_REQUEST
             )
-        if user == follower:
+        if user == author:
             raise ValidationError(
                 detail='Вы не можете подписаться на себя!',
                 code=status.HTTP_400_BAD_REQUEST
