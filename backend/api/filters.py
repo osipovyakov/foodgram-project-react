@@ -1,7 +1,5 @@
-from distutils.util import strtobool
-
 import django_filters
-from recipes.models import Favorite, Ingredient, Recipe
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class IngredientFilterSet(django_filters.FilterSet):
@@ -15,7 +13,9 @@ class IngredientFilterSet(django_filters.FilterSet):
 
 class RecipeFilterSet(django_filters.FilterSet):
     tags = django_filters.AllValuesMultipleFilter(
-        field_name='tags__slug'
+        field_name='tags__slug',
+        to_field_name='slug',
+        queryset=Tag.objects.all(),
     )
     is_favorited = django_filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = django_filters.BooleanFilter(
@@ -23,16 +23,13 @@ class RecipeFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
+        fields = ('author', 'tags',)
 
     def filter_is_favorited(self, queryset, name, value):
-        if self.request.user.is_anonymous:
-            return Recipe.objects.none()
-        new_queryset = Favorite.objects.filter(
-            user=self.request.user).values_list('recipe_id')
-        if not strtobool(value):
-            return queryset.difference(new_queryset)
-        return queryset.filter(id__in=new_queryset)
+        user = self.requset.user
+        if value and not user.is_anonymous:
+            return queryset.filter(favorite__user=user)
+        return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         user = self.request.user

@@ -43,8 +43,8 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly | IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
+    filter_backends = (DjangoFilterBackend,)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
