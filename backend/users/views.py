@@ -38,12 +38,11 @@ class CustomUserView(UserViewSet):
                 author, context={'request': request})
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            if subscription.exists():
-                subscription.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'Вы не подписаны на этого пользователя'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if subscription.exists():
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'Вы не подписаны на этого пользователя'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,
