@@ -12,7 +12,7 @@ class IngredientFilterSet(django_filters.FilterSet):
 
 
 class RecipeFilterSet(django_filters.FilterSet):
-    tags = django_filters.AllValuesMultipleFilter(
+    tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all(),
