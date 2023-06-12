@@ -1,3 +1,4 @@
+from api.paginations import CustomPagination
 from api.serializers import CustomUserSerializer, SubscribeUserSerializer
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -15,6 +16,7 @@ User = get_user_model()
 class CustomUserView(UserViewSet):
     quyryset = User.objects.all()
     serializer_class = CustomUserSerializer
+    pagination_class = CustomPagination
 
     @action(
         detail=True,

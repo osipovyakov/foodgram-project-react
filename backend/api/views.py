@@ -16,6 +16,7 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import IngredientFilterSet, RecipeFilterSet
+from .paginations import CustomPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
     IngredientSerializer, RecipeCreateUpdateSerializer, RecipeSerializer,
@@ -43,6 +44,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly | IsAdminOrReadOnly,)
+    pagination_class = CustomPagination
     filterset_class = RecipeFilterSet
     filter_backends = (DjangoFilterBackend,)
 
