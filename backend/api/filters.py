@@ -12,6 +12,7 @@ class IngredientFilterSet(django_filters.FilterSet):
 
 
 class RecipeFilterSet(django_filters.FilterSet):
+    author = django_filters.NumberFilter(field_name='author__pk')
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
@@ -27,12 +28,12 @@ class RecipeFilterSet(django_filters.FilterSet):
 
     def filter_is_favorited(self, queryset, name, value):
         user = self.requset.user
-        if value and not user.is_anonymous:
+        if value and self.request.user.is_authenticated:
             return queryset.filter(favorite__user=user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         user = self.request.user
-        if value and not user.is_anonymous:
+        if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=user)
         return queryset
