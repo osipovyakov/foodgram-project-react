@@ -43,7 +43,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitPagination
-    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
 
     def perform_create(self, serializer):
