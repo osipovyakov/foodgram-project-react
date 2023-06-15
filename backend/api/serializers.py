@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from recipes.models import (
-    Ingredient, Recipe, Favorite, ShoppingList, RecipeIngredient, Tag)
+    Ingredient, Recipe, RecipeIngredient, Tag)
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField, ReadOnlyField
