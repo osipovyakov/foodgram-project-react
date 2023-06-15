@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from recipes.models import (
-    Ingredient, Recipe, RecipeIngredient, Tag)
+    Ingredient, Recipe, Favorite, ShoppingList, RecipeIngredient, Tag)
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField, ReadOnlyField
@@ -105,16 +105,12 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart',)
 
     def get_is_favorited(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return user.favorite.filter(recipe=obj).exists()
+        return Favorite.objects.filter(
+            user=self.context['request'].user.id, recipe=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return user.shopping_cart.filter(recipe=obj).exists()
+        return ShoppingList.objects.filter(
+            user=self.context['request'].user.id, recipe=obj.id).exists()
 
 
 class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
