@@ -172,7 +172,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
             tags_list.append(tag)
         return value
 
-    def get_ingredients(self, recipe, ingredients):
+    def recipe_ingredients(self, recipe, ingredients):
         RecipeIngredient.objects.bulk_create(
             RecipeIngredient(
                 recipe=recipe,
@@ -186,7 +186,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.get_ingredients(recipe, ingredients)
+        self.recipe_ingredients(recipe, ingredients)
         return recipe
 
     @transaction.atomic
@@ -197,7 +197,7 @@ class RecipeCreateUpdateSerializer(RecipeSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.get_ingredients(
+        self.recipe_ingredients(
             recipe=instance, ingredients=ingredients)
         return instance
 
