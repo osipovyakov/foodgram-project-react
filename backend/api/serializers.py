@@ -233,7 +233,7 @@ class SubscribeUserSerializer(CustomUserSerializer):
         return data
 
     def get_recipes_count(self, obj):
-        return obj.recipes.count()
+        return obj.recipes.count(user=self.context.get('request').user)
 
     def get_recipes(self, obj):
         request = self.context.get('request')
