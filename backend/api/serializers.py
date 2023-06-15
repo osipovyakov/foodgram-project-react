@@ -107,13 +107,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         return Favorite.objects.filter(
             user=self.context['request'].user.id, recipe=obj.id
-        ).exists()
+        )
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return user.shopping_cart.filter(recipe=obj).exists()
+        return user.shopping_cart.filter(recipe=obj)
 
 
 class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
