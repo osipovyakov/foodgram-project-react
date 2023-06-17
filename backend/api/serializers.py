@@ -61,7 +61,9 @@ class TagSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = ('id',
+                  'name',
+                  'measurement_unit',)
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -252,41 +254,3 @@ class RecipeWithoutRequestSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time'
         )
-
-
-class FavoriteSerializer(serializers.ModelSerializer):
-    name = serializers.ReadOnlyField(
-        source='recipe.name',
-        read_only=True)
-    image = serializers.ImageField(
-        source='recipe.image',
-        read_only=True)
-    coocking_time = serializers.IntegerField(
-        source='recipe.cooking_time',
-        read_only=True)
-    id = serializers.PrimaryKeyRelatedField(
-        source='recipe',
-        read_only=True)
-
-    class Meta:
-        model = Favorite
-        fields = ('id', 'name', 'image', 'coocking_time')
-
-
-class ShoppingListSerializer(serializers.ModelSerializer):
-    name = serializers.ReadOnlyField(
-        source='recipe.name',
-        read_only=True)
-    image = serializers.ImageField(
-        source='recipe.image',
-        read_only=True)
-    coocking_time = serializers.IntegerField(
-        source='recipe.cooking_time',
-        read_only=True)
-    id = serializers.PrimaryKeyRelatedField(
-        source='recipe',
-        read_only=True)
-
-    class Meta:
-        model = ShoppingList
-        fields = ('id', 'name', 'image', 'coocking_time')
