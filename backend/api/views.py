@@ -45,6 +45,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitPagination
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
 
     def perform_create(self, serializer):
@@ -76,16 +77,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.delete_from(ShoppingList, request.user, pk)
 
     def add_to(self, model, user, pk):
-        if model.objects.filter(user=user, recipe=pk).exists():
+        if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response({'Рецепт уже добавлен!'},
                             status=status.HTTP_400_BAD_REQUEST)
-        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = RecipeWithoutRequestSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_from(self, model, user, pk):
-        obj = model.objects.filter(user=user, recipe=pk)
+        obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
