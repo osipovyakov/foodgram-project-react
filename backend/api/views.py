@@ -5,8 +5,7 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingList, Tag)
+from recipes.models import (Ingredient, Recipe, RecipeIngredient, Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -20,7 +19,7 @@ from .paginations import LimitPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     IngredientSerializer, RecipeCreateUpdateSerializer, RecipeSerializer,
-    TagSerializer, FavoriteSerializer, ShoppingCartSerializer, RecipeWithoutRequestSerializer)
+    TagSerializer, FavoriteSerializer, ShoppingCartSerializer)
 
 User = get_user_model()
 
@@ -69,12 +68,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if self.request.method == 'DELETE':
-            if object.exists():
-                object.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'error': 'Этого рецепта нет в списке'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if object.exists():
+            object.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'Этого рецепта нет в списке'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
