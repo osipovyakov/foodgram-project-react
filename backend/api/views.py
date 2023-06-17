@@ -66,7 +66,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
@@ -74,7 +73,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.delete_from(ShoppingList, request.user, pk)
 
     def add_to(self, model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
+        if model.objects.filter(user=user, recipe=pk).exists():
             return Response({'Рецепт уже добавлен!'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=pk)
@@ -83,7 +82,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_from(self, model, user, pk):
-        obj = model.objects.filter(user=user, recipe__id=pk)
+        obj = model.objects.filter(user=user, recipe=pk)
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
