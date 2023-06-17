@@ -121,7 +121,7 @@ class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
                   'amount',)
 
 
-class RecipeCreateUpdateSerializer(RecipeSerializer):
+class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     ingredients = RecipeIngredientCreateSerializer(many=True)
