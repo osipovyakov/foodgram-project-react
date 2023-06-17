@@ -183,7 +183,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.recipe_ingredients(recipe, ingredients)
+        self.recipe_ingredients(
+            recipe=recipe, ingredients=ingredients)
         return recipe
 
     @transaction.atomic
