@@ -54,14 +54,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def action_post_delete(self, pk, serializer_class):
         user = self.request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe = get_object_or_404(Recipe, id=pk)
         object = serializer_class.Meta.model.objects.filter(
             user=user, recipe=recipe
         )
 
         if self.request.method == 'POST':
             serializer = serializer_class(
-                data={'user': user.id, 'recipe': pk},
+                data={'user': user.id, 'recipe': id},
                 context={'request': self.request}
             )
             serializer.is_valid(raise_exception=True)
@@ -76,11 +76,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
-        return self.action_post_delete(pk, FavoriteSerializer)
+        return self.action_post_delete(pk, request.user, FavoriteSerializer)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
-        return self.action_post_delete(pk, ShoppingCartSerializer)
+        return self.action_post_delete(
+            pk, request.user, ShoppingCartSerializer)
 
     @action(
         detail=False,
