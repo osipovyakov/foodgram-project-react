@@ -57,7 +57,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeCreateUpdateSerializer
 
     @action(
-        detail=True,
+        detail=False,
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
@@ -94,6 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
+        methods=['get'],
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
