@@ -30,13 +30,13 @@ class RecipeFilterSet(django_filters.FilterSet):
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart',)
 
     def filter_is_favorited(self, queryset, name, value):
-        author = self.requset.user
+        user = self.requset.user
         if value and self.request.user.is_authenticated:
-            return queryset.filter(favorite__author=author)
+            return queryset.filter(favorite__user=user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        author = self.request.user
+        user = self.request.user
         if value and self.request.user.is_authenticated:
-            return queryset.filter(shopping_cart__author=author)
+            return queryset.filter(shopping_cart__user=user)
         return queryset
