@@ -32,9 +32,9 @@ class RecipeFilterSet(django_filters.FilterSet):
     def filter_is_favorited(self, queryset, name, value):
         if value:
             return queryset.filter(favorite__user=self.requset.user)
-        return queryset
+        return queryset.exclude(favorite__user=self.requset.user)
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         if value:
             return queryset.filter(shopping_cart__user=self.requset.user)
-        return queryset
+        return queryset.exclude(shopping_cart__user=self.requset.user)
