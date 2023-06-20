@@ -62,7 +62,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         if request.method == 'POST':
-            print('Рецепт добавлен в избранное')
             return self.add_to(Favorite, request.user, pk)
         return self.delete_from(Favorite, request.user, pk)
 
