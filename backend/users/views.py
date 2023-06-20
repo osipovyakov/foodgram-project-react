@@ -1,4 +1,5 @@
 from api.paginations import LimitPagination
+from api.permissions import IsAuthorOrReadOnly
 from api.serializers import CustomUserSerializer, SubscribeUserSerializer
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -17,6 +18,7 @@ class CustomUserView(UserViewSet):
     quyryset = User.objects.all()
     serializer_class = CustomUserSerializer
     pagination_class = LimitPagination
+    permission_classes = (IsAuthorOrReadOnly,)
 
     @action(
         detail=True,
