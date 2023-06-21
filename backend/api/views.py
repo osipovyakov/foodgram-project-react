@@ -103,7 +103,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if not user.shopping_cart.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        ingredients = RecipeIngredient.objects.filter(
+        ingredients = Ingredient.objects.filter(
             recipe__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
