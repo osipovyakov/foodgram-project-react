@@ -5,7 +5,8 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe, ShoppingList, Tag)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingList, Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -102,8 +103,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if not user.shopping_cart.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        ingredients = Ingredient.objects.filter(
-            name__shopping_cart__user=request.user
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__ingredient_recipeingredient__user=user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
