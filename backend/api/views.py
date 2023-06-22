@@ -108,7 +108,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(amount=Sum('ingredient__amount'))
+        ).annotate(sum_amount=Sum('amount'))
 
         buffer = io.BytesIO()
         shopping_list_fin = canvas.Canvas(buffer)
@@ -122,7 +122,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             string = (
                 f'- {ingredient["ingredient__name"]} '
                 f'({ingredient["ingredient__measurement_unit"]})'
-                f' - {ingredient["amount"]}')
+                f' - {ingredient["sum_amount"]}')
             shopping_list_fin.drawString(100, y, string)
             y -= 30
         shopping_list_fin.showPage()
