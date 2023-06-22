@@ -104,11 +104,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         ingredients = RecipeIngredient.objects.filter(
-            recipe__shopping_cart__user=request.user
+            recipes__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(ingredient__amount=Sum('amount'))
+        ).annotate(amount=Sum('amount'))
 
         buffer = io.BytesIO()
         shopping_list_fin = canvas.Canvas(buffer)
@@ -122,7 +122,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             string = (
                 f'- {ingredient["ingredient__name"]} '
                 f'({ingredient["ingredient__measurement_unit"]})'
-                f' - {ingredient["ingredient__amount"]}')
+                f' - {ingredient["amount"]}')
             shopping_list_fin.drawString(100, y, string)
             y -= 30
         shopping_list_fin.showPage()
