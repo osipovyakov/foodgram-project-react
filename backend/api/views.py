@@ -107,7 +107,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         ingredients = Ingredient.objects.filter(
             in_recipe__recipe__in=shopping_cart_recipes
-        ).annotate(total=Sum('amount'))
+        ).annotate(total=Sum('in_recipe__amount'))
 
         buffer = io.BytesIO()
         shopping_list_fin = canvas.Canvas(buffer)
