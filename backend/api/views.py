@@ -104,7 +104,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         ingredients = RecipeIngredient.objects.filter(
-            recipe__shopping_cart__user=request.user
+            ingredient__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
@@ -117,7 +117,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shopping_list_fin.drawString(
             100, 750, f'{user.get_full_name()}, вот Ваш Cписок покупок:')
         y = 700
-        shopping_list_fin.drawString(100, 750, ingredients)
+        shopping_list_fin.drawString(100, 720, ingredients)
 
         for ingredient in ingredients:
             string = (
