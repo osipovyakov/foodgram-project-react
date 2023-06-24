@@ -117,7 +117,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shopping_list_fin.drawString(
             100, 750, f'{user.get_full_name()}, вот Ваш Cписок покупок:')
         y = 700
-        shopping_list_fin.drawString(100, 720, ingredients)
 
         for ingredient in ingredients:
             string = (
