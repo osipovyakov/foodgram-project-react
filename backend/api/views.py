@@ -122,6 +122,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             string = (
                 f'- {ingredient["ingredient__name"]} '
                 f'({ingredient["ingredient__measurement_unit"]})'
+                f'({ingredient["ingredient__id"]})'
                 f' - {ingredient["amount"]}')
             shopping_list_fin.drawString(100, y, string)
             y -= 30
