@@ -91,8 +91,6 @@ sudo docker-compose exec backend python manage.py dumpdata > fixtures.json
 
 - http://<публичный_IP-адрес_виртуальной_машины>/
 
-##   Сейчас сайт достуен по адресу:
-- http://158.160.51.74/
 ## Логин и пароль для админки
 - login: admin@admin.com
 - password: admin
